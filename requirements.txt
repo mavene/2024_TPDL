@@ -1,0 +1,5 @@
+seaborn_image
+pillow
+torchvision
+ipywidgets
+torchvision==0.17.1
