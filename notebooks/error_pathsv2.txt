@@ -1,0 +1,1 @@
+../ChexPhoto/chexphoto-v1//train/natural/iphone/patient01595/study8/view1_frontal.jpg
