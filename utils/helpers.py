@@ -13,18 +13,27 @@
 
 import torch
 import os
-def save_model_ckpt(self, model, ):
-    print("saving model checkpoint, itr:", itr)
-    model_path = os.path.join(self.model_save_dir, '{}-.ckpt'.format(itr))
 
-    torch.save(model.state_dict(), model_path)
-    print('Saved model checkpoints into {}...'.format(self.model_save_dir))
+# Saves the model
+def save_model_ckpt(self, model, epoch, optimizer, loss):
+    print("Saving model checkpoint on epoch %d:", epoch)
+    model_path = os.path.join(self.model_save_dir, '{}-.ckpt'.format(epoch))
 
-# Restore the model 
-# Note that itr is the value of the last checkpoint file
-# The new starting epoch is (itr + 1) 
-def restore_model(self, model, itr):
+    torch.save({
+        'epoch' : epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': loss.item()
+    }, model_path)
+
+# Restore the model
+def restore_model(self, model, epoch, optimizer, loss):
     print('Restore the trained models')
-    model_path = os.path.join(self.model_save_dir, '{}-.ckpt'.format(itr))
+    model_path = os.path.join(self.model_save_dir, '{}-.ckpt'.format(epoch))
        
-    model.load_state_dict(torch.load(model_path))
+    model.load_state_dict(torch.load(model_path)['model_state_dict'])
+    #optimizer.load_state_dict(torch.load(model_path)['optimizer_state_dict'])
+    #loss.load_state_dict(torch.load(model_path)['loss'])
+    #loss.load_state_dict(torch.load(model_path)['epoch'])
+
+    model.eval()
