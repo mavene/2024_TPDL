@@ -71,7 +71,7 @@ def plot_values(train_values, valid_values, metric, title):
     plt.show()
 
 def detach_tensor(tensor):
-    return tensor.detach().cpu().numpy()
+    return tensor.detach().cpu().item()
 
 def process_tensors(lst):
     copy = deepcopy(lst)
