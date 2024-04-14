@@ -85,6 +85,42 @@ class ConvNet(nn.Module):
         out4 = self.classifier2(out2)
         return out3, out4
     
+class ConvSingle(nn.Module):
+    def __init__(self, channels: tuple[int], img_size: tuple[int], hidden_size: tuple[int], output_size: int, dropout_rate: int = 0.2):
+        super(ConvSingle, self).__init__()
+        
+        # Hyperparameters for Convolutional Layers
+        self.kernel_size = 3
+        self.stride = 1
+        self.padding = 1
+        self.pool_size = 2
+
+        # Input size of Image
+        self.input_height, self.input_width = img_size
+
+        # Calculate Input Size of Classifier
+        for i in range(len(channels) - 1):
+            self.input_height = math.floor((self.input_height + 2 * self.padding - self.kernel_size)/ self.stride + 1) // self.pool_size
+            self.input_width =  math.floor((self.input_width  + 2 * self.padding - self.kernel_size)/ self.stride + 1) // self.pool_size
+        
+        self.classifier_size = channels[-1] * self.input_height * self.input_width
+        
+        # Model Layers
+        self.conv_layers = nn.Sequential(*[ConvolutionBlock(channels[i], channels[i+1], self.kernel_size, self.stride, self.padding, self.pool_size) for i in range(len(channels)-1)])
+        self.classifier = ClassifierBlock(self.classifier_size, hidden_size, output_size, dropout_rate)
+
+    def forward(self,x):
+        # Convolutional Layers
+        out1 = self.conv_layers(x)
+
+        # keep batch size and flatten the rest
+        out2 = out1.view(out1.size(0), -1)
+
+        # Classifier Layers
+        out3 = self.classifier(out2)
+        
+        return out3
+    
 class SkipBlock(nn.Module):
     def __init__(self, in_channels: int, hidden_channels: int, out_channels: int, kernel_size: int, stride: int, padding: int, pool_size: int = 2):
         super(SkipBlock, self).__init__()
