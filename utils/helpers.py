@@ -15,25 +15,35 @@ import torch
 import os
 
 # Saves the model
-def save_model_ckpt(self, model, epoch, optimizer, loss):
-    print("Saving model checkpoint on epoch %d:", epoch)
-    model_path = os.path.join(self.model_save_dir, '{}-.ckpt'.format(epoch))
+def save_model(model, optimizer, epoch, path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    model_path = os.path.join(path, f'{epoch}.pt')
 
     torch.save({
-        'epoch' : epoch,
+        'epoch': epoch,
         'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict(),
-        'loss': loss.item()
+        'optimizer_state_dict': optimizer.state_dict()
     }, model_path)
 
-# Restore the model
-def restore_model(self, model, epoch, optimizer, loss):
-    print('Restore the trained models')
-    model_path = os.path.join(self.model_save_dir, '{}-.ckpt'.format(epoch))
-       
-    model.load_state_dict(torch.load(model_path)['model_state_dict'])
-    #optimizer.load_state_dict(torch.load(model_path)['optimizer_state_dict'])
-    #loss.load_state_dict(torch.load(model_path)['loss'])
-    #loss.load_state_dict(torch.load(model_path)['epoch'])
+# Loads the model hyperparameters
+def load_config(model_constructor, modelName, path='../models'):
+    import json
+    config_path = path + "/" + modelName + "/" + "config.json"
+    with open(config_path, "r") as f:
+        args = json.load(f)
+        return model_constructor(**args)
 
-    model.eval()
+# Load the model weights
+def restore_model(model, modelName, epoch, path="../models"):
+    model_path = path + "/" + modelName + "/" + str(epoch) + ".pt"
+    # print(model_path)
+    model.load_state_dict(torch.load(model_path)['model_state_dict'])
+    return model
+
+# Load model with hyperparameters and weights
+def load_model(model_constructor, modelName, epoch, path='../models'):
+    model = load_config(model_constructor, modelName, path)
+    model = restore_model(model, modelName, epoch, path)
+    return model
