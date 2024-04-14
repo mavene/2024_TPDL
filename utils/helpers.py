@@ -4,6 +4,26 @@ import os
 import numpy
 import random
 
+# Seeder for reproducibility
+def seed_everything(seed: int):
+    
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    numpy.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+
+
+# Saves the model hyperparameters
+def save_json(dict, path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+    import json
+    config_path = path + "/" + "config.json"
+    with open(config_path, "w") as f:
+        json.dump(dict, f)
+
 # Saves the model
 def save_model(model, optimizer, epoch, path):
     if not os.path.exists(path):
