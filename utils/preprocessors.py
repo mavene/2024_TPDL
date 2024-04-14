@@ -1,3 +1,5 @@
+import numpy
+
 def fix_error_paths(row):
     row = row.replace("//", "/")
     return row
