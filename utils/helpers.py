@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 
 # Seeder for reproducibility
 def seed_everything(seed: int):
-    
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     numpy.random.seed(seed)
